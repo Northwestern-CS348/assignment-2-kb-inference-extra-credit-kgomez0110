@@ -142,6 +142,78 @@ class KnowledgeBase(object):
         """
         ####################################################
         # Student code goes here
+        
+        if isinstance(fact_or_rule, Fact):
+            fact = self._get_fact(fact_or_rule)
+            result = ""
+            if not fact:
+                return "Fact is not in the KB"
+            result += self.print_fact(fact)
+            if fact.supported_by:
+                result += "\n"
+                result += self.explain_helper(fact.supported_by, 2)
+           # print(result)
+            return result
+
+            # print(fact.supported_by[0][1].statement)
+            
+
+        elif isinstance(fact_or_rule, Rule):
+            rule = self._get_rule(fact_or_rule)
+            result = ""
+            if not rule:
+                return "Rule is not in the KB"
+            result += self.print_rule(rule)
+            if rule.supported_by:
+                result += "\n"
+                result += self.explain_helper(rule.supported_by, 2)
+          #  print(result)
+            return result
+
+        else:
+            return False
+
+    def print_rule(self, rule):
+        result = "rule: ("
+        for num in range(len(rule.lhs)):
+            result += str(rule.lhs[num])
+            if not num == (len(rule.lhs) - 1):
+                result += ", "
+        result += ") -> "
+        result += str(rule.rhs)
+        if (rule.asserted):
+            result += " ASSERTED"
+        return result
+
+    def print_fact(self, fact):
+        result = "fact: "
+        result += str(fact.statement)
+        if (fact.asserted):
+            result += " ASSERTED"
+        return result
+
+    def explain_helper(self, support_list, indent):
+        result = ""
+        for supp in support_list:
+            for num in range(indent):
+                result += " "
+            result += "SUPPORTED BY\n"
+            for num in range(indent+2):
+                result += " "
+            result += self.print_fact(supp[0])
+            result += "\n"
+            if supp[0].supported_by:
+                result += self.explain_helper(supp[0].supported_by, indent+4)
+            for num in range(indent+2):
+                result += " "
+            result += self.print_rule(supp[1])
+            result += "\n"
+            if supp[1].supported_by:
+                result += self.explain_helper(supp[1].supported_by, indent+4)
+        return result
+
+
+
 
 
 class InferenceEngine(object):
